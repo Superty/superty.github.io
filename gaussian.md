@@ -1,14 +1,19 @@
-After writing this up I realized that I needed to assume the probability densities are continuous. Oh well.
 
-Let `X` and `Y` be iid random variables drawn from a distribution `D`. We want to show that if `A = X + Y` and `B = X - Y` are independent, then `D` is a Gaussian.
+## Let `X, Y ~ D`; if `X + Y` and `X - Y` are independent, show `D` is a Gaussian
 
-Let `f`, `g`, and `h` be the probability densities of `X`, `X + Y`, and `X - Y` respectively. (of course, `f` is also the density of `Y`).
+#### Or: how to waste the greater part of a weekend proving something in a completely obtuse and unenlightening but 'elementary' way
+
+Let `X` and `Y` be iid random variables drawn from a distribution `D`. We want to show that if `X + Y` and `X - Y` are independent, then `D` is a Gaussian.
+
+Let `f`, `g`, and `h` be the probability densities of `X`, `X + Y`, and `X - Y` respectively, fuctions from the reals to the non-negative reals with total area under the curve equal to 1. (Of course, `f` is also the density of `Y`). We will assume that `f` is continuous.
 
 Let the probability density of the joint distribution of `X + Y` and `X - Y` be `d(a, b)`. But `d(x + y, x - y) = f(x) f(y)` since fixing the values of `X + Y` and `X - Y` totally determines the values of `X` and `Y`.
 
 Now since `X + Y` and `X - Y` are independent we have
 
-`f(x) f(y) = g(x + y) h(x - y)` ---- (1)
+`f(x) f(y) = g(x + y) h(x - y)` ---- (1).
+
+First, let's prove that `f` can never be zero. Suppose `f(a)` is zero, this gives us four lines `x = a`, `y = a` that must be zero in `D^2`. 
 
 We want to express `g` and `h` in terms of `f`.
 
@@ -24,45 +29,60 @@ Substituting `a = (x + y)/2` and `b = (x - y)/2` in (1) and dividing by (4), we 
 
 `F(a)^2 F(b) F(-b) = F(a + b) F(a - b)` ---- (5).
 
-We want to prove that `F` is even, i.e., `F(x) = F(-x)`, because once we show that the above equations simplifies nicely into
+At this point I wasted a lot of time trying to prove that `F` is even, i.e., `F(x) = F(-x)`, because once we show that the above equations simplify nicely and we can continue making some substitutions until we get the result. If I were to give up, now would've been the time, knowing that the proof along these lines was not going to be nice. Alas, I was too stubborn.
 
-`F(a)^2 F(b)^2 = F(a + b) F(a - b)` ---- (6).
+I got as far as `F(x) = F(-x) r^x` for some `r`, but could not prove `r = 1`. After a long time I realized that `e^x` is a solution to (5), ruled out only because it's not L1 (i.e., the "total probability" is infinite). After that I spent a whole lot of time trying to use the fact that the probability densities `f`, `g`, `h`, need to be L1, but this led nowhere. The above relation with `r` plus being L1 are not enough to prove anything useful, as those two conditions are not sufficient to enforce (5). So I went back to (5) and tried to extract more properties from it that I could use in the analysis.
 
-At that point, we will be able to continue making some substitutions until we get the result, as follows. Per usual with solving functional equations whose solutions we want to be exponentials, we'll express everything in terms of `F(1)`. Let's call `F(1)` as `c`.
+At this point I ended up just proving it directly. It took embarassingly long for me to realize that I had actually solved it, and that `F` need not even be even (ha), and that `F(x) = exp(-x^2 - x)` is a solution, for example. It was then that I remembered that the Gaussian could be centered somewhere other than zero, so `F` need not be even.
 
-Setting `b = 1` we get `F(a)^2 c^2 = F(a + 1) F(a - 1)`. In other words, `F(a + 1) / F(a) = c^2 F(a) / F(a - 1)`, i.e., the ratio between successive natural number values increases by `c^2` every time. The first ratio, `F(1)/F(0)` is `c` by definition. Each time it increases by two, so the ratios are `c^1, c^3, c^5, ...` and the values of `F` at `0, 1, 2 ...` are `c^1, c^4, c^9, ...` so we have `F(n) = c^(n^2)` for naturals `n`.
+Now we can make some substitutions and prove the result. What we need to prove is that `F(x)` is of the form `exp(px^2 + qx)` for real `p`, `q` and `p < 0`. This is the form of the Gaussian density function after normalizing by the value at zero.
 
-We can also support division by two. Setting `b = a` in (6) we obtain `F(a)^4 = F(2a)`, which is to say `F(a/2) = F(a)^(1/4)`. This along with the evenness of `F` is enough to get `F(x) = c^(x^2)` for all `x` of the form `i/2^k` for integers `i` and `k`.
+As is usual when we want to prove that something is an exponential, we will try to show everything is a power of `F(1)`. Substituting `b = 1` in (5), we get
 
-Now, we need `F` to be continuous for this next part. I never learnt analysis, but from what I understood, any real number can be described by a Cauchy sequence consisting of only rationals of the form `i/2^k` so determining `F` at these points suffices to determine it for all real values. (stole this part from https://math.stackexchange.com/questions/505/can-there-be-two-distinct-continuous-functions-that-are-equal-at-all-rationals)
+`F(a)^2 F(1) F(-1) = F(a + 1) F(a - 1)` ---- (6).
 
-But it's left to prove that `F` is even if it satisfies `F(a)^2 F(b) F(-b) = F(a + b) F(a - b)`. (5)
+Okay, so let `c = F(1)` and `c*t = F(-1)`. Substituting and rearranging, we get
 
-We want to relate `F(x) and F(-x)`. Changing `b` to `-b` is useless in this equation so we are unable to use the `F(-b)` term to do this. But we _can_ use the `F(a - b)` term.
+`t * c^2 * F(a)/F(a - 1) = F(a + 1) / F(a)` ---- (6).
 
-Swapping `a` and `b`, we get `F(b)^2 F(a) F(-a) = F(a + b) F(b - a)`. Dividing (5) by this we get `F(a) F(-b) / (F(b) F(-a)) = F(a - b) / F(b - a)`. Notice a pattern? Let `r(x) = F(x)/F(-x)`. Then by rearranging and setting `p = a - b` we have:
+So the ratio between successive integer values gets gets multiplied by `t c^2` each time. So we have
 
-`r(p + b) = r(p) r(b)` ---- (7).
+`F(1) / F(0) = c`,
 
-So `r` is an exponential! (proof omitted) Eventually we want to prove that `r` is always one, but this is a start. So we know that
+`F(2) / F(1) = t c^3`,
 
-`F(x) = F(-x) t^x` ---- (8).
+`F(3) / F(2) = t^2 c^5`,
 
-Frustratingly, I couldn't find any elementary way of proceeding from here. It was only later that I realized `F(x) = e^x` satisfies (5), `F(a)^2 F(b) F(-b) = F(a + b) F(a - b)`. (in that case, `t = e^2`)
+`F(4) / F(3) = t^3 c^7`,
 
-Of course, `e^x` is not a valid probability density. So we need to bring in more properties of the density to get rid of this pesky `e^x`. The total area under the curve must be finite and non-zero.
+so, since the sum of the first `n` odd numbers is `n^2` and the sum of the first `n - 1` naturals is `n(n - 1)/2`, we can see that `F(n) = t^(n(n - 1)/2) c^(n^2)`. Since both `c` and `t` are positive, we can rewrite them as `c = e^k` and `t = e^l` where `k` and `l` are reals, to obtain `F(n) = exp(n^2 (k + l/2) - n (l/2))`. Setting `p = k + l/2` and `q = -l/2`, we get
 
-All integrals mentioned are definite integrals from -infinity to +infinity. We have that `∫F(x)dx`, `∫F(x)F(-x)dx`, and `∫F(x)^2dx` are finite and strictly positive since total probability for `f`, `g`, and `h` is finite and positive (but we can't say the integrals above have to be one since we normalized by `f(0)`, `g(0)`, `h(0)`).
+`F(n) = exp(p n^2 + q n)` for all naturals `n` ---- (7).
 
-For now let's assume that `F(x)` is also strictly positive. (proof that it can't be zero isn't cslear but I think it can be done.)
+We can also support division by two. Substituting `b = a/2` in (5), we get
 
+`F(a)^3 F(-a) = F(2a)`  ---- (8).
 
+`F(-a)^3 F(a) = F(-2a)` ---- (9).
+
+Dividing (8) by (9), we obtain
+
+`F(a)/F(-a)  = sqrt(F(2a)/F(-2a))` ---- (10).
+
+For any natural `n`, we know `F(n) / F(-n) = exp(2qn)`. Using (10), `F(n/2) / F(-n/2) = sqrt(exp(2qn)) = exp(2q(n/2))`. We can prove this for any `x = n/2^k` for natural `k`, by induction. Using this and (8), we have
+
+`F(x/2)^4 = F(x) exp(qx)` for all `x = n/2^k` ---- (11).
+
+From this, and (7), we have
 
 ```
-∫ F(x) dx
-= ∫ F(-x) t^-x dx       from (8)
-= ∫ F(x) t^(x) dx     (x -> -x and flipping the limits)
-= ∫ F(-x) t^-x t^(x) dx
-= ∫ F(-x) t^(-x) dx   
-
+F(n/2)^4 = exp(p n^2 + qn) exp(qn)
+         = exp(p n^2 + 2qn)
+F(n/2)   = exp(p (n/2)^2 + q (n/2)).
 ```
+
+Again, by induction we can prove `F(x) = exp(px^2 + qx)` for all `x = n/2^k`. Now since we can represent any real number aribtrarily closely with a number of this form, this is sufficient to establish that this must hold for all real `x`, assuming `F` is continuous. (formally, there exists a Cauchy sequence consisting of only numbers of this form for any real). So we have
+
+`F(x) = exp(px^2 + qx)` for all reals `x` ---- (12).
+
+If `p >= 0`, then `F` would not be L1 and hence could not be a probability density. Therefore, `p < 0`, as desired.
